@@ -19,13 +19,32 @@
      <widget class="QLineEdit" name="le_demo"/>
     </item>
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="l_listwidgets">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QListWidget" name="lv_scene"/>
+       <widget class="QComboBox" name="cb_projects"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cb_types"/>
       </item>
      </layout>
     </item>
     <item row="2" column="0">
+     <layout class="QHBoxLayout" name="l_listwidgets">
+      <item>
+       <widget class="QListWidget" name="lv_scene"/>
+      </item>
+      <item>
+       <widget class="QListWidget" name="listWidget"/>
+      </item>
+      <item>
+       <widget class="QListWidget" name="listWidget_2"/>
+      </item>
+      <item>
+       <widget class="QListWidget" name="listWidget_3"/>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="0">
      <layout class="QHBoxLayout" name="l_checkbox">
       <item>
        <widget class="QCheckBox" name="cb_ma">
@@ -50,7 +69,7 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <layout class="QHBoxLayout" name="l_button"/>
     </item>
    </layout>

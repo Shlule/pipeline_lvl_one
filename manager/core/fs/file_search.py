@@ -1,5 +1,6 @@
 from pathlib import Path
 import glob
+import os
 
 import manager.conf as conf
 from manager.core import resolver
@@ -53,11 +54,36 @@ def get_entities(project_name, extension_list=["*"]):
             yield data
 
 
+def get_categorie(project,type):
+    """
+    :param project: put the project name
+    :param type: Type string; est le type de données demander souvent assets ou shaots
+    :return:
+    """
+    m_path = Path(conf.project_root) / project / type
+    print (m_path)
+    x = glob.glob(str(m_path)+'/*')
+    print(x)
+
+def new_get_entities(project, type, entity_type):
+    """
+
+    :param project: is the project_name
+    :param type: Type string; est le type de données demander souvent assets ou shots
+    :param entity_type: is the name in reslver template {categorie} etc.
+    :return:
+    """
+    if(entity_type == 'categorie' or entity_type == 'sequence'):
+        get_categorie(project,type)
+    else:
+        print('doesnt entity type')
+
+
+
 
 
 if __name__ == '__main__':
-    from pprint import pprint
-    m_list = list(get_files('micromovie', ['ma','jpg']))
-    print(m_list)
-    m_list = list(get_entities('micromovie', ['ma', 'jpg']))
-    pprint(m_list)
+
+    x ='Microfilms'
+    y='shots'
+    new_get_entities(x,y,'sequence')

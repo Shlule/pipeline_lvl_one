@@ -41,7 +41,7 @@ if __name__ == '__main__':
     from pprint import pprint
 
     m_path = 'D:/Elouan/Microfilms/assets/car/porshe911/modeling/v004/work/porshe991.ma'
-    print (templates[0].keys())
+    #print (templates[0].keys())
     data = parse(m_path)
     #get one elemnt of entity
     pprint(data)

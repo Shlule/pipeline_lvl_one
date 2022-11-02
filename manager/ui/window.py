@@ -9,7 +9,7 @@ from manager import conf,engine
 import manager.core.fs as fs
 
 
-ui_path = Path(__file__).parent / "qt" / "window.ui"
+ui_path = Path(__file__).parent / "qt" / "window_v02.ui"
 file_extension = Path(ui_path).suffix
 project_name = 'micromovie'
 
@@ -39,6 +39,7 @@ class Window(QMainWindow):
         self.setWindowTitle(conf.global_name)
         self.refresh_list()
         self.choose_extension()
+        self.init_comboboxes()
 
 
 
@@ -60,7 +61,14 @@ class Window(QMainWindow):
             temp.clicked.connect(self.do_it)
             self.l_button.addWidget(temp)
 
-
+    def init_comboboxes(self):
+        """
+        this function is not dynamic  if we had an other project we must add it in
+        conf.conf_files
+        :return:
+        """
+        self.cb_projects.addItems(conf.conf_files.projects.keys())
+        self.cb_types.addItems(conf.conf_files.type)
 
     def refresh_list(self, extension_list=[]):
         #clear my QlistWidget named lv_scene to make idempotent function
