@@ -3,7 +3,7 @@ from pathlib import Path
 import Qt
 from Qt.QtWidgets import QMainWindow
 from Qt import QtWidgets, QtCompat,QtCore
-import glob
+from pprint import pprint
 
 from manager import conf,engine
 import manager.core.fs as fs
@@ -11,7 +11,7 @@ import manager.core.fs as fs
 
 ui_path = Path(__file__).parent / "qt" / "window_v02.ui"
 file_extension = Path(ui_path).suffix
-project_name = 'micromovie'
+
 
 
 UserRole = QtCore.Qt.UserRole
@@ -34,12 +34,13 @@ class Window(QMainWindow):
         print('init window')
         QtCompat.loadUi(str(ui_path), self)
         self.update_l_button()
+        self.init_comboboxes()
         self.connect()
         self.le_demo.setText("how are you ?")
         self.setWindowTitle(conf.global_name)
-        self.refresh_list()
-        self.choose_extension()
-        self.init_comboboxes()
+        self.init_principal_list([])
+
+
 
 
 
@@ -67,21 +68,30 @@ class Window(QMainWindow):
         conf.conf_files
         :return:
         """
-        self.cb_projects.addItems(conf.conf_files.projects.keys())
-        self.cb_types.addItems(conf.conf_files.type)
+        self.cb_projects.addItems(conf.project_list.keys())
+        self.cb_types.addItems(conf.conf_files.type_list)
 
-    def refresh_list(self, extension_list=[]):
+    def init_principal_list(self):
         #clear my QlistWidget named lv_scene to make idempotent function
-        self.lv_scene.clear()
+        x= self.cb_projects.currentText()
+        y = self.cb_types.currentText()
+        project_name = conf.project_list.get(x)
+        type = conf.type_list.get(y)
+
         #create a list of all entity corresponding to my critere
-        list_entity_found = list(fs.get_entities(project_name,extension_list))
+        list_entity_found = list(fs.get_entities(project_name,type,'categorie'))
+        pprint(list_entity_found)
         for entity in list_entity_found:
+
+            name = entity.get('categorie')
             #I create item
             item = QtWidgets.QListWidgetItem()
+            #set text to item
+            item.setText(name)
             #set item data with entity
             item.setData(UserRole, entity)
-
             self.lv_scene.addItem(item)
+
 
 
 
@@ -105,7 +115,7 @@ class Window(QMainWindow):
         #sinon je deduis ce qui a etait rajouter et je l'ajoute
 
 
-        self.refresh_list(my_list)
+
 
 
 
@@ -148,6 +158,7 @@ def open_window():
 
 
 if __name__ == '__main__':
+
 
     app = QtWidgets.QApplication()
     open_window()
