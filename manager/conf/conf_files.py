@@ -15,10 +15,10 @@ shots_file_pattern ="shots/sq*/sh*/*/sh*.{ext}"
 
 globing_dictionary={'categorie': project_root+'/{project}/{type}/*',
                     'sequence': project_root+'/{project}/{type}/*',
-                    'assetName': project_root+'/{project}/{type}/*/*',
-                    'shots': project_root+'/{project}/{type}/*/*',
-                    'job': project_root+'/{project}/{type}/*/*/*',
-                    'file': project_root+'/{project}/{type}/*/*/*/**/*.{ext}'}
+                    'asset_name': project_root+'/{project}/{type}/{categorie}/*',
+                    'shots': project_root+'/{project}/{type}/{categorie}/*',
+                    'job': project_root+'/{project}/{type}/{categorie}/{asset_name}/*',
+                    'file': project_root+'/{project}/{type}/{categorie}/{asset_name}/{job}/**/*.{ext}'}
 
 
 # warning this dictionay was sort alphabeticaly sorted with keys

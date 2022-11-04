@@ -19,3 +19,6 @@ class StandAloneEngine:
         print(type(path))
         #print('start '+ path)
         os.system('start '+ path)
+
+    def build(self, entity):
+        print(entity)

@@ -38,11 +38,22 @@ class Window(QMainWindow):
         self.connect()
         self.le_demo.setText("how are you ?")
         self.setWindowTitle(conf.global_name)
-        self.init_principal_list([])
+        self.init_principal_list()
+
+        self.lv_scene.itemSelectionChanged.connect(self.selection_changed)
 
 
 
 
+
+    def selection_changed(self):
+        """
+
+        :return: name of the selected item in lv_scene qlistwidgets
+        """
+        selected_item_list=(self.lv_scene.selectedItems())
+        for item in selected_item_list:
+            print(item.text())
 
 
     def print_item(self):
@@ -72,14 +83,16 @@ class Window(QMainWindow):
         self.cb_types.addItems(conf.conf_files.type_list)
 
     def init_principal_list(self):
-        #clear my QlistWidget named lv_scene to make idempotent function
-        x= self.cb_projects.currentText()
-        y = self.cb_types.currentText()
-        project_name = conf.project_list.get(x)
-        type = conf.type_list.get(y)
+        # filter is a dictionary which must contain as keys, name in bracket in globing_dictionanry in conf_files
+        #{categorie}/{job} look globing_dictionnary in conf_files
+
+        filter={'project': conf.project_list.get(self.cb_projects.currentText()),
+                'type': conf.type_list.get(self.cb_types.currentText())}
+
 
         #create a list of all entity corresponding to my critere
-        list_entity_found = list(fs.get_entities(project_name,type,'categorie'))
+        #using get_entities function wich need (str,dictionay) argument
+        list_entity_found = list(fs.get_entities('categorie',filter))
         pprint(list_entity_found)
         for entity in list_entity_found:
 
@@ -91,8 +104,6 @@ class Window(QMainWindow):
             #set item data with entity
             item.setData(UserRole, entity)
             self.lv_scene.addItem(item)
-
-
 
 
 
@@ -127,15 +138,6 @@ class Window(QMainWindow):
         self.cb_houdini.stateChanged.connect(self.choose_extension)
 
 
-    def do_open(self):
-        """
-        get the current item selected as a text and call the open function of the current engine cast
-        :return:
-        """
-        x = self.lv_scene.currentItem().text()
-        self.my_engine.open(x)
-        print("hello")
-
     def do_it(self):
         """
         this is a fake factory to permit get only one method for push button
@@ -144,7 +146,8 @@ class Window(QMainWindow):
         """
         #je stocke dans une variable l'item selectioné et recupere la data presente dans l'item
         x = self.lv_scene.currentItem().data(UserRole)
-        #je get l'attribut et l'execute regarde la doc de getattr
+        #je get l'attribut et l'execute regarde la doc de getattr le deuxieme attribut est le nome correspondant
+        #a la function dans l'engine
         getattr(self.my_engine,self.sender().text())(x)
 
 
