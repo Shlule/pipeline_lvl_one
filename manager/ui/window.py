@@ -53,7 +53,25 @@ class Window(QMainWindow):
         """
         selected_item_list=(self.lv_scene.selectedItems())
         for item in selected_item_list:
-            print(item.text())
+            itemName = item.text()
+            itemObject = item.data(UserRole)
+
+        filter = itemObject
+        list_entity_found = list(fs.get_entities('asset_name', filter))
+        temp = QtWidgets.QListWidget()
+        self.l_listwidgets.addWidget(temp)
+        for entity in list_entity_found:
+
+            name = entity.get('asset_name')
+            #I create item
+            item = QtWidgets.QListWidgetItem()
+            #set text to item
+            item.setText(name)
+            #set item data with entity
+            item.setData(UserRole, entity)
+            temp.addItem(item)
+
+
 
 
     def print_item(self):
@@ -80,11 +98,12 @@ class Window(QMainWindow):
         :return:
         """
         self.cb_projects.addItems(conf.project_list.keys())
-        self.cb_types.addItems(conf.conf_files.type_list)
+        self.cb_types.addItems(conf.type_list)
 
     def init_principal_list(self):
         # filter is a dictionary which must contain as keys, name in bracket in globing_dictionanry in conf_files
         #{categorie}/{job} look globing_dictionnary in conf_files
+
 
         filter={'project': conf.project_list.get(self.cb_projects.currentText()),
                 'type': conf.type_list.get(self.cb_types.currentText())}
