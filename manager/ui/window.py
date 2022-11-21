@@ -4,6 +4,7 @@ import Qt
 from Qt.QtWidgets import QMainWindow
 from Qt import QtWidgets, QtCompat,QtCore
 from pprint import pprint
+from manager.core import validator
 
 from manager import conf,engine
 import manager.core.fs as fs
@@ -50,27 +51,27 @@ class Window(QMainWindow):
     def selection_changed(self):
         """
 
-        :return: name of the selected item in lv_scene qlistwidgets
+        :return: name of the selected item in lv_scene Qlistwidgets
         """
-        selected_item_list=(self.lv_scene.selectedItems())
-        for item in selected_item_list:
-            itemName = item.text()
-            itemObject = item.data(UserRole)
+        # get selected item from the sender object
+        selected_item_list = (self.sender().selectedItems())
+        for item in  selected_item_list:
+            item_name = item.text()
+            item_data = item.data(UserRole)
+        #testing entity_type of the current item
+        if(validator.determine_entity_type(item_data)== 'categorie'):
+            item_data['asset_name'] = '*'
+            entities_found = requester.get_entities('asset_name',item_data)
 
-        filter = itemObject
-        list_entity_found = list(requester.get_entities('asset_name', filter))
-        temp = QtWidgets.QListWidget()
-        self.l_listwidgets.addWidget(temp)
-        for entity in list_entity_found:
+        elif(validator.determine_entity_type(item_data)=='sequence'):
+            item_data['shots'] = '*'
+            entities_found = requester.get_entities('shots', item_data)
 
-            name = entity.get('asset_name')
-            #I create item
-            item = QtWidgets.QListWidgetItem()
-            #set text to item
-            item.setText(name)
-            #set item data with entity
-            item.setData(UserRole, entity)
-            temp.addItem(item)
+        elif(validator.determine_entity_type(item_data) == 'asset_name' or validator.determine_entity_type(item_data)=='shots'):
+            item_data['job'] = '*'
+            entities_found = requester.get_entities('job',item_data)
+
+
 
 
 
@@ -123,7 +124,6 @@ class Window(QMainWindow):
             item.setText(name)
             #set item data with entity
             item.setData(UserRole, entity)
-            print(entity)
             self.lv_scene.addItem(item)
 
 
@@ -190,7 +190,8 @@ if __name__ == '__main__':
 
     filter = {'project': 'Microfilms',
               'type': 'assets',
-              'categorie':'*'}
-
+              'categorie':'Prop',
+              'asset_name': '*'}
+    pprint(requester.get_entities('asset_name',filter))
 
 

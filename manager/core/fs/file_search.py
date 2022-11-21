@@ -1,5 +1,6 @@
 
 import glob
+import sys
 
 import manager.conf as conf
 from manager.core import resolver
@@ -53,6 +54,7 @@ def get_job(filter):
     :param filter Type dictionnary: contain all precedent entity we must get
     :return: list of path
     """
+
     path_pattern = conf.globing_dictionary.get('job')
     path = path_pattern.format(**filter)
     #path = path_pattern.format(project=filter.get('project'),type=filter.get('type'),categorie=filter.get('categorie'),asset_name=filter.get('asset_name'))
@@ -127,47 +129,10 @@ def request_filesystem( entity_type, filter , extension_list=["*"],):
         print(" are expected")
 
 
-
-
-
-def validate_filter(filter):
-    """
-    this function verifie the if the filter have correct key and value according the key 'type'
-    :param filter: must be a dictionnary
-    :return: bool true if is validate
-    """
-
-    type = filter.get('type')
-    if (type == None):
-        raise Exception("your filter haven't key 'type' ")
-    elif(type == 'assets'):
-        mandatory_keys=['categorie','asset_name']
-        for key in mandatory_keys:
-            if key not in filter:
-                print("your filter is not valid")
-                return False
-        return True
-
-
-    elif (type == 'shots'):
-        mandatory_keys = ['sequence', 'shots']
-        for key in mandatory_keys:
-            if key not in filter:
-                print("your filter is not valid")
-                return False
-        return True
-
-
-
-
-
-
 if __name__ == '__main__':
-
-    # create a filter verification pn my class
-
     from pprint import pprint
     from manager.test.test_data import test_dictionary
+    # create a filter verification pn my class
 
     for item, filtres in test_dictionary.items():
         for filtre in filtres:
@@ -181,19 +146,6 @@ if __name__ == '__main__':
 
 
     #pprint(get_entities('categorie',filter))
-
-
-
-
-
-    """
-    filters = []
-    filter = ['project', 'is', {'type': 'Project', 'id': project_id}]
-    filters.append(filter)
-    filter =['entity.Shot.code','is','sq010_sh010']
-    filters.append(filter)
-    r=sg.find("Task", filters=filters, fields=['content', 'entity.Shot.code'])
-    pprint(r)"""
 
 
 

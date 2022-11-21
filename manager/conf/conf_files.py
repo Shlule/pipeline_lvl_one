@@ -38,9 +38,9 @@ templates_dictionary={'asset_file': project_root+'/{project}/{type}/{categorie}/
 
 request_type_dictionary={'categorie': 'shotgun',
                           'sequence': 'shotgun',
-                          'asset_name': 'database',
-                          'shots': 'database',
-                          'job':'database',
+                          'asset_name': 'shotgun',
+                          'shots': 'shotgun',
+                          'job':'shotgun',
                           'file':'filesystem'}
 
 

@@ -1,36 +1,10 @@
 
 import manager.conf as conf
 from manager.core.shotgun import connect_sg
+from manager.core import validator
 
 sg = connect_sg.get_sg()
 
-
-def validate_filter(filter):
-    """
-    this function verifie the if the filter have correct key and value according the key 'type'
-    :param filter: must be a dictionnary
-    :return: bool true if is validate
-    """
-
-    type = filter.get('type')
-    if (type == None):
-        raise Exception("your filter haven't key 'type' ")
-    elif(type == 'assets'):
-        mandatory_keys=['categorie','asset_name']
-        for key in mandatory_keys:
-            if key not in filter:
-                print("your filter is not valid")
-                return False
-        return True
-
-
-    elif (type == 'shots'):
-        mandatory_keys = ['sequence', 'shots']
-        for key in mandatory_keys:
-            if key not in filter:
-                print("your filter is not valid")
-                return False
-        return True
 
 def request_categorie(filter):
 
@@ -81,7 +55,7 @@ def request_sequence(filter):
 
 
     # search in dictionary project_id la valeur de la clef 'microfilms'
-    project_id = conf.project_id.get(filter.get(list(filter.keys())[0]))
+    project_id = conf.project_id.get(filter.get('project'))
 
     # initialise my list of filters and append my filter
     m_filters = []
@@ -116,13 +90,13 @@ def request_sequence(filter):
 
 
 def request_asset_name(filter):
-    if(validate_filter(filter)):
+    if(validator.validate_filter(filter)):
         # testing the value of the key 'type' in my filter is different to assets
         if (filter.get('type') != ('assets')):
             raise Exception("you request a asset_name but in your filter the value of key 'type' isn't assets")
 
         # search in dictionary project_id la valeur de la clef 'microfilms'
-        project_id = conf.project_id.get(filter.get(list(filter.keys())[0]))
+        project_id = conf.project_id.get(filter.get('project'))
 
         # initialise my list of filters and append my filter
         m_filters = []
@@ -164,13 +138,13 @@ def request_asset_name(filter):
 
 def request_shots(filter):
 
-    if(validate_filter(filter)):
+    if(validator.validate_filter(filter)):
         # testing the value of the key 'type' in my filter is different to assets
         if (filter.get('type') != ('shots')):
             raise Exception("you request a asset_name but in your filter the value of key 'type' isn't assets")
 
         # search in dictionary project_id la valeur de la clef 'microfilms'
-        project_id = conf.project_id.get(filter.get(list(filter.keys())[0]))
+        project_id = conf.project_id.get(filter.get('project'))
 
         # initialise my list of filters and append my filter
         m_filters = []
@@ -213,9 +187,9 @@ def request_shots(filter):
 def request_job(filter):
 
 
-    if(validate_filter(filter)):
+    if(validator.validate_filter(filter)):
         # search in dictionary project_id la valeur de la clef 'microfilms'
-        project_id = conf.project_id.get(filter.get(list(filter.keys())[0]))
+        project_id = conf.project_id.get(filter.get('project'))
 
         # initialise my list of filters and append my filter
         m_filters = []
@@ -322,8 +296,17 @@ def request_shotgun(entity_type,filter):
 if __name__ == '__main__':
     import sys
     from pprint import pprint
+    from manager.test.test_data import test_dictionary
+
+    filter = {'project': 'Microfilms',
+              'type': 'assets',
+              'categorie': 'prop',
+              'asset_name': '*'}
+
+    print(request_shotgun('asset_name',filter))
 
 
+    sys.exit()
     for item, filtres in test_dictionary.items():
         for filtre in filtres:
             try:
@@ -334,16 +317,3 @@ if __name__ == '__main__':
             except Exception as e:
                 print(f"that doesn't work {e}")
 
-
-
-    sys.exit()
-
-    project_id = 1095
-    sg_type = 'Asset'
-    filters=[]
-    filter1 = ['project', 'is', {'type': 'Project', 'id': project_id}]
-    filters.append(filter1)
-    filter2 = ['step_0', 'is', filter.get('job')]
-    filters.append(filter2)
-    x = sg.find('Task', filters = filters, fields = ['content','entity.'+sg_type+'.code','entity.'+sg_type+'.sg_asset_type'])
-    pprint(x)
