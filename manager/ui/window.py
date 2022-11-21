@@ -7,6 +7,7 @@ from pprint import pprint
 
 from manager import conf,engine
 import manager.core.fs as fs
+import manager.core.requester as requester
 
 
 ui_path = Path(__file__).parent / "qt" / "window_v02.ui"
@@ -57,7 +58,7 @@ class Window(QMainWindow):
             itemObject = item.data(UserRole)
 
         filter = itemObject
-        list_entity_found = list(fs.get_entities('asset_name', filter))
+        list_entity_found = list(requester.get_entities('asset_name', filter))
         temp = QtWidgets.QListWidget()
         self.l_listwidgets.addWidget(temp)
         for entity in list_entity_found:
@@ -98,7 +99,7 @@ class Window(QMainWindow):
         :return:
         """
         self.cb_projects.addItems(conf.project_list.keys())
-        self.cb_types.addItems(conf.type_list)
+        self.cb_types.addItems(conf.translate_to_sg)
 
     def init_principal_list(self):
         # filter is a dictionary which must contain as keys, name in bracket in globing_dictionanry in conf_files
@@ -106,13 +107,13 @@ class Window(QMainWindow):
 
 
         filter={'project': conf.project_list.get(self.cb_projects.currentText()),
-                'type': conf.type_list.get(self.cb_types.currentText())}
+                'type': self.cb_types.currentText(),
+                'categorie': '*'}
 
 
         #create a list of all entity corresponding to my critere
         #using get_entities function wich need (str,dictionay) argument
-        list_entity_found = list(fs.get_entities('categorie',filter))
-        pprint(list_entity_found)
+        list_entity_found = list(requester.get_entities('categorie',filter))
         for entity in list_entity_found:
 
             name = entity.get('categorie')
@@ -122,6 +123,7 @@ class Window(QMainWindow):
             item.setText(name)
             #set item data with entity
             item.setData(UserRole, entity)
+            print(entity)
             self.lv_scene.addItem(item)
 
 
@@ -185,4 +187,10 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication()
     open_window()
     app.exec_()
+
+    filter = {'project': 'Microfilms',
+              'type': 'assets',
+              'categorie':'*'}
+
+
 

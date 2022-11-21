@@ -1,10 +1,9 @@
-from pathlib import Path
+
 import glob
-import os
 
 import manager.conf as conf
 from manager.core import resolver
-from manager.core.shotgun import connect_sg
+
 
 
 def get_categorie(filter):
@@ -12,13 +11,20 @@ def get_categorie(filter):
     this function get the correct path directly in conf module
 
     :param filter Type dictionnary: contain all precedent entity we must get
-    :return: list of path
+    :return: list of entity
     """
-    path_pattern = conf.conf_files.globing_dictionary.get(list(conf.globing_dictionary.keys())[0])
+    path_pattern = conf.conf_files.globing_dictionary.get('categorie')
     path = path_pattern.format(**filter)
     #path = path_pattern.format(project=filter.get('project'), type=filter.get('type'))
-    result = glob.glob(path)
-    return result
+    path_list = glob.glob(path)
+    entity_list = []
+    for path in path_list:
+        # create my entity using parse  thanks to path obtain with get_categorie function
+        entity = resolver.parse(path, resolver.categorie_templates)
+        entity_list.append(entity)
+        # return the list of all entity corresponding
+    return entity_list
+
 
 def get_asset_name(filter):
     """
@@ -27,10 +33,18 @@ def get_asset_name(filter):
     :param filter Type dictionnary: contain all precedent entity we must get
     :return: list of path
     """
-    path_pattern = conf.conf_files.globing_dictionary.get(list(conf.globing_dictionary.keys())[2])
-    path = path_pattern.format(project=filter.get('project'), type=filter.get('type'),categorie=filter.get('categorie'))
-    result = glob.glob(path)
-    return result
+    path_pattern = conf.conf_files.globing_dictionary.get('asset_name')
+    path = path_pattern.format(**filter)
+    print(path)
+    #path = path_pattern.format(project=filter.get('project'), type=filter.get('type'),categorie=filter.get('categorie'))
+    path_list = glob.glob(path)
+    entity_list = []
+    for path in path_list:
+        # create my entity using parse  thanks to path obtain with get_categorie function
+        entity = resolver.parse(path, resolver.asset_name_templates)
+        entity_list.append(entity)
+        # return the list of all entity corresponding
+    return entity_list
 
 def get_job(filter):
     """
@@ -39,13 +53,17 @@ def get_job(filter):
     :param filter Type dictionnary: contain all precedent entity we must get
     :return: list of path
     """
-    path_pattern = conf.conf_files.globing_dictionary.get(list(conf.globing_dictionary.keys())[4])
-    path = path_pattern.format(project=filter.get('project'),
-                               type=filter.get('type'),
-                               categorie=filter.get('categorie'),
-                               asset_name=filter.get('asset_name'))
-    result = glob.glob(path)
-    return result
+    path_pattern = conf.globing_dictionary.get('job')
+    path = path_pattern.format(**filter)
+    #path = path_pattern.format(project=filter.get('project'),type=filter.get('type'),categorie=filter.get('categorie'),asset_name=filter.get('asset_name'))
+    path_list = glob.glob(path)
+    entity_list = []
+    for path in path_list:
+        # create my entity using parse  thanks to path obtain with get_categorie function
+        entity = resolver.parse(path, resolver.job_templates)
+        entity_list.append(entity)
+        # return the list of all entity corresponding
+    return entity_list
 def get_files(filter, extension_list=["*"]):
     """
     this function get the correct path directly in conf module
@@ -54,11 +72,15 @@ def get_files(filter, extension_list=["*"]):
     :param type: Type string; est le type de données demander souvent assets ou shaots
     :return: list of path
     """
-    path_pattern = conf.conf_files.globing_dictionary.get(list(conf.globing_dictionary.keys())[5])
+    path_pattern = conf.conf_files.globing_dictionary.get('file')
     generator_list =[]
     for ext in extension_list:
-        path = path_pattern.format(**filter,
-                                   ext=ext)
+        path = path_pattern.format(project=filter.get('project'),
+                                    type=filter.get('type'),
+                                    categorie=filter.get('categorie'),
+                                    asset_name=filter.get('asset_name'),
+                                    job = filter.get('job'),
+                                    ext=ext)
         found = glob.glob(path, recursive=True)
         generator_list.append(found)
     for generator in generator_list:
@@ -66,7 +88,7 @@ def get_files(filter, extension_list=["*"]):
             yield item
 
 
-def get_entities( entity_type, filter , extension_list=["*"],):
+def request_filesystem( entity_type, filter , extension_list=["*"],):
     """
     :param filter: type Dictionary
     :param project: is the project_name
@@ -76,43 +98,17 @@ def get_entities( entity_type, filter , extension_list=["*"],):
 
     Warning: suivant les project il faudra changer les clefs souhaiter dans les conditions
     """
-    if(entity_type == list(conf.globing_dictionary.keys())[0]
-            or entity_type == list(conf.globing_dictionary.keys())[1] ):
-        #create variable to store result of get_categorie function
-        path_list = get_categorie(filter)
-        entity_list =[]
-        for path in path_list:
-            #create my entity using parse  thanks to path obtain with get_categorie function
-            entity = resolver.parse(path,resolver.categorie_templates)
-            entity_list.append(entity)
-            #return the list of all entity corresponding
-        return entity_list
+    if(entity_type == ('categorie' or 'sequence' )):
+        return get_categorie(filter)
 
+    elif (entity_type == ('asset_name' or 'shots')):
+        print('enter in request_filesystem')
+        return get_asset_name(filter)
 
-    elif (entity_type == list(conf.globing_dictionary.keys())[2]
-          or entity_type == list(conf.globing_dictionary.keys())[3]):
-        # create variable to store result of get_asset_name function
-        path_list = get_asset_name(filter)
-        entity_list = []
-        for path in path_list:
-            # create my entity using parse  thanks to path obtain with get_asset_name function
-            entity = resolver.parse(path, resolver.name_templates)
-            entity_list.append(entity)
-            # return the list of all entity corresponding
-        return entity_list
+    elif (entity_type == 'job'):
+        return get_job(filter)
 
-    elif (entity_type == list(conf.globing_dictionary.keys())[4]):
-        # create variable to store result of get_job function
-        path_list = get_job(filter)
-        entity_list = []
-        for path in path_list:
-            # create my entity using parse  thanks to path obtain with get_job function
-            entity = resolver.parse(path, resolver.job_templates)
-            entity_list.append(entity)
-            # return the list of all entity corresponding
-        return entity_list
-
-    elif(entity_type == list(conf.globing_dictionary.keys())[5]):
+    elif(entity_type == 'file'):
         # create variable to store result of get_files function
         path_list = get_files(filter, extension_list)
         entity_list = []
@@ -134,28 +130,76 @@ def get_entities( entity_type, filter , extension_list=["*"],):
 
 
 
+def validate_filter(filter):
+    """
+    this function verifie the if the filter have correct key and value according the key 'type'
+    :param filter: must be a dictionnary
+    :return: bool true if is validate
+    """
+
+    type = filter.get('type')
+    if (type == None):
+        raise Exception("your filter haven't key 'type' ")
+    elif(type == 'assets'):
+        mandatory_keys=['categorie','asset_name']
+        for key in mandatory_keys:
+            if key not in filter:
+                print("your filter is not valid")
+                return False
+        return True
+
+
+    elif (type == 'shots'):
+        mandatory_keys = ['sequence', 'shots']
+        for key in mandatory_keys:
+            if key not in filter:
+                print("your filter is not valid")
+                return False
+        return True
+
+
+
+
+
+
 if __name__ == '__main__':
+
+    # create a filter verification pn my class
+
     from pprint import pprint
-    sg = connect_sg.get_sg()
-    project_id = 1095
-    filters = [["sg_status_list", "is", "wtg"]]
+    from manager.test.test_data import test_dictionary
+
+    for item, filtres in test_dictionary.items():
+        for filtre in filtres:
+            try:
+                print(f'testing {item}')
+                pprint(filtre)
+                pprint(request_filesystem(item, filtre))
+                print('*' * 50)
+            except Exception as e:
+                print(f"that doesn't work {e}")
+
+
+    #pprint(get_entities('categorie',filter))
+
+
+
+
+
+    """
+    filters = []
     filter = ['project', 'is', {'type': 'Project', 'id': project_id}]
     filters.append(filter)
+    filter =['entity.Shot.code','is','sq010_sh010']
+    filters.append(filter)
+    r=sg.find("Task", filters=filters, fields=['content', 'entity.Shot.code'])
+    pprint(r)"""
 
-    r=sg.find("Shot", filters=filters, fields=["code", "sg_status_list"])
-    pprint(r)
 
 
 
 
-    x ='Microfilms'
-    y='assets'
-    filter={'ok': 'Microfilms',
-            'type':'assets',
-            'categorie':'*',
-            'asset_name':'*',
-            'job':'rigging'}
-    pprint(list(get_entities('file',filter)))
+
 
 
 

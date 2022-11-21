@@ -5,7 +5,7 @@ import lucidity
 files_templates = [lucidity.Template('asset_file',templates_dictionary.get('asset_file')),
             lucidity.Template('shot_file',templates_dictionary.get('shot_file'))]
 
-name_templates =[ lucidity.Template('asset_name', templates_dictionary.get('asset_name')),
+asset_name_templates =[ lucidity.Template('asset_name', templates_dictionary.get('asset_name')),
                lucidity.Template('shot_name',templates_dictionary.get('shot_name'))]
 
 categorie_templates = [lucidity.Template('categorie', templates_dictionary.get('categorie')),
