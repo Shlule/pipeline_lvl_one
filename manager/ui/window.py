@@ -60,16 +60,61 @@ class Window(QMainWindow):
             item_data = item.data(UserRole)
         #testing entity_type of the current item
         if(validator.determine_entity_type(item_data)== 'categorie'):
+            #tranform item_data into a filter
             item_data['asset_name'] = '*'
+
+            #request data corresponding to new filter
             entities_found = requester.get_entities('asset_name',item_data)
 
+            pprint(entities_found)
+            #in case of non existing list this will be an error and go to except
+            try:
+                #i celar the list to re complete it with new data
+                self.lv_categorie.clear()
+                print('hello')
+                for entity in entities_found:
+                    pass
+
+            except:
+                # i create a list that contain data requested
+                temp = QtWidgets.QListWidget()
+                temp.setObjectName('lv_categorie')
+                print(temp)
+                self.l_listwidgets.addWidget(temp)
+
+                for entity in entities_found:
+                    name = entity.get('asset_name')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    self.lv_categorie.addItem(item)
+
+
+
         elif(validator.determine_entity_type(item_data)=='sequence'):
+            #transform item_data into a filter
             item_data['shots'] = '*'
+
+            # request data corresponding to new filter
             entities_found = requester.get_entities('shots', item_data)
 
+            pprint(entities_found)
+
         elif(validator.determine_entity_type(item_data) == 'asset_name' or validator.determine_entity_type(item_data)=='shots'):
+            #transform item_data into a filter
             item_data['job'] = '*'
+
+            #request data corresponding to new filter
             entities_found = requester.get_entities('job',item_data)
+
+            pprint(entities_found)
 
 
 
@@ -192,6 +237,7 @@ if __name__ == '__main__':
               'type': 'assets',
               'categorie':'Prop',
               'asset_name': '*'}
-    pprint(requester.get_entities('asset_name',filter))
+
+
 
 
