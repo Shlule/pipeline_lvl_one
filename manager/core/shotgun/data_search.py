@@ -217,14 +217,18 @@ def request_job(filter):
                 m_filters.append(m_filter)
 
         elif(sg_type == 'Shot'):
-            if (filter.get('sequence') != '*'):
-                # create a new filter depending of the categorie or sequence
-                m_filter = ['entity.' + sg_type + '.sg_asset_type', 'is', filter.get('sequence')]
+            # we haven't sequence in our shotgun
+
+            if (filter.get('shots') != '*'):
+
+                m_filter = ['entity.' + sg_type + '.code', 'is', filter.get('shots')]
                 m_filters.append(m_filter)
 
-                # create a new filter depending of the asset_name or shots
-            m_filter = ['entity.' + sg_type + '.code', 'is', filter.get('shots')]
-            m_filters.append(m_filter)
+            if (filter.get('job') != '*'):
+                print('je suis dans job')
+                m_filter = ['content', 'is', filter.get('job')]
+                m_filters.append(m_filter)
+
 
         # make shotgun request
         x = sg.find('Task', filters = m_filters, fields = ['content','entity.'+sg_type+'.code','entity.'+sg_type+'.sg_asset_type'])
@@ -299,11 +303,17 @@ if __name__ == '__main__':
     from manager.test.test_data import test_dictionary
 
     filter = {'project': 'Microfilms',
-              'type': 'assets',
-              'categorie': 'prop',
-              'asset_name': '*'}
+              'type': 'shots',
+              'sequence': 'sq010',
+              'shots': 'sq010_sh010',
+              'job': 'Environment'}
+    filter2 = {'project': 'Microfilms',
+               'type': 'assets',
+               'categorie': 'prop',
+               'asset_name': 'porshe911',
+               'job': 'ExtraFx'}
 
-    print(request_shotgun('asset_name',filter))
+    pprint(request_shotgun('job',filter))
 
 
     sys.exit()

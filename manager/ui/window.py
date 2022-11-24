@@ -13,7 +13,7 @@ import manager.core.requester as requester
 
 ui_path = Path(__file__).parent / "qt" / "window_v02.ui"
 file_extension = Path(ui_path).suffix
-
+ui_list_dict = {}
 
 
 UserRole = QtCore.Qt.UserRole
@@ -41,16 +41,19 @@ class Window(QMainWindow):
         self.le_demo.setText("how are you ?")
         self.setWindowTitle(conf.global_name)
         self.init_principal_list()
-
-        self.lv_scene.itemSelectionChanged.connect(self.selection_changed)
-
-
+        self.lv_scene.itemSelectionChanged.connect(self.list_selection_changed)
+        self.cb_types.currentIndexChanged.connect(self.comboBox_changed)
 
 
 
-    def selection_changed(self):
+
+
+    def clearlayout(self, layout):
+        pass
+
+
+    def list_selection_changed(self):
         """
-
         :return: name of the selected item in lv_scene Qlistwidgets
         """
         # get selected item from the sender object
@@ -66,22 +69,10 @@ class Window(QMainWindow):
             #request data corresponding to new filter
             entities_found = requester.get_entities('asset_name',item_data)
 
-            pprint(entities_found)
             #in case of non existing list this will be an error and go to except
-            try:
-                #i celar the list to re complete it with new data
-                self.lv_categorie.clear()
-                print('hello')
-                for entity in entities_found:
-                    pass
-
-            except:
-                # i create a list that contain data requested
-                temp = QtWidgets.QListWidget()
-                temp.setObjectName('lv_categorie')
-                print(temp)
-                self.l_listwidgets.addWidget(temp)
-
+            if 'lv_categorie' in ui_list_dict:
+                #i clear the list to recomplete it with new data
+                ui_list_dict.get('lv_categorie').clear()
                 for entity in entities_found:
                     name = entity.get('asset_name')
                     # I create item
@@ -94,7 +85,35 @@ class Window(QMainWindow):
                     # set item data with entity
                     item.setData(UserRole, entity)
 
-                    self.lv_categorie.addItem(item)
+                    ui_list_dict.get('lv_categorie').addItem(item)
+
+            else:
+                # i create a list that contain data requested
+                temp = QtWidgets.QListWidget()
+
+                #store this list in a dictionary
+                ui_list_dict['lv_categorie'] = temp
+
+                # connect the new list slection to this same function
+                temp.itemSelectionChanged.connect(self.list_selection_changed)
+
+                #display the list
+                self.l_listwidgets.addWidget(ui_list_dict.get('lv_categorie'))
+
+                #put entity in the list
+                for entity in entities_found:
+                    name = entity.get('asset_name')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_categorie').addItem(item)
 
 
 
@@ -105,16 +124,167 @@ class Window(QMainWindow):
             # request data corresponding to new filter
             entities_found = requester.get_entities('shots', item_data)
 
-            pprint(entities_found)
+            if 'lv_sequence' in ui_list_dict:
+                # i clear the list to recomplete it with new data
+                ui_list_dict.get('lv_sequence').clear()
+                for entity in entities_found:
+                    name = entity.get('shots')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_sequence').addItem(item)
+
+            else:
+                # i create a list that contain data requested
+                temp = QtWidgets.QListWidget()
+
+                # store this list in a dictionary
+                ui_list_dict['lv_sequence'] = temp
+
+                # connect the new list slection to this same function
+                temp.itemSelectionChanged.connect(self.list_selection_changed)
+
+                # display the list
+                self.l_listwidgets.addWidget(ui_list_dict.get('lv_sequence'))
+
+                # put entity in the list
+                for entity in entities_found:
+                    name = entity.get('shots')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_sequence').addItem(item)
+
+
 
         elif(validator.determine_entity_type(item_data) == 'asset_name' or validator.determine_entity_type(item_data)=='shots'):
             #transform item_data into a filter
             item_data['job'] = '*'
 
-            #request data corresponding to new filter
-            entities_found = requester.get_entities('job',item_data)
+            # request data corresponding to new filter
+            entities_found = requester.get_entities('job', item_data)
 
-            pprint(entities_found)
+            if 'lv_job' in ui_list_dict:
+                #i clear the list to recomplete it with new data
+                ui_list_dict.get('lv_job').clear()
+                for entity in entities_found:
+                    name = entity.get('job')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_job').addItem(item)
+
+            else:
+                # i create a list that contain data requested
+                temp = QtWidgets.QListWidget()
+
+                #store this list in a dictionary
+                ui_list_dict['lv_job'] = temp
+
+                # connect the new list slection to this same function
+                temp.itemSelectionChanged.connect(self.list_selection_changed)
+
+                #display the list
+                self.l_listwidgets.addWidget(ui_list_dict.get('lv_job'))
+
+                #put entity in the list
+                for entity in entities_found:
+                    name = entity.get('job')
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_job').addItem(item)
+
+        elif (validator.determine_entity_type(item_data) == 'asset_name' or validator.determine_entity_type(
+            item_data) == 'job'):
+
+
+            # request data corresponding to new filter
+            entities_found = requester.get_entities('file', item_data)
+
+            if 'lv_file' in ui_list_dict:
+                # i clear the list to recomplete it with new data
+                ui_list_dict.get('lv_file').clear()
+                for entity in entities_found:
+                    #on format le nom des file
+                    x = entity.get('asset_name')
+                    y = entity.get('extension')
+                    z = entity.get('version')
+                    name = f'{z}/{x}.{y}'
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_file').addItem(item)
+
+            else:
+                # i create a list that contain data requested
+                temp = QtWidgets.QListWidget()
+
+                # store this list in a dictionary
+                ui_list_dict['lv_file'] = temp
+
+                # connect the new list slection to this same function
+                temp.itemSelectionChanged.connect(self.list_selection_changed)
+
+                # display the list
+                self.l_listwidgets.addWidget(ui_list_dict.get('lv_file'))
+
+                # put entity in the list
+                for entity in entities_found:
+                    x = entity.get('asset_name')
+                    y = entity.get('extension')
+                    z = entity.get('version')
+                    name = f'{z}/{x}.{y}'
+                    # I create item
+
+                    item = QtWidgets.QListWidgetItem()
+
+                    # set text to item
+                    item.setText(name)
+
+                    # set item data with entity
+                    item.setData(UserRole, entity)
+
+                    ui_list_dict.get('lv_file').addItem(item)
+
+
+
+
 
 
 
@@ -138,6 +308,12 @@ class Window(QMainWindow):
             temp.clicked.connect(self.do_it)
             self.l_button.addWidget(temp)
 
+    def comboBox_changed(self):
+        pprint(self.l_listwidgets.takeAt(1))
+        self.lv_scene.clear()
+        self.ui_list_dict = {}
+
+        self.init_principal_list()
     def init_comboboxes(self):
         """
         this function is not dynamic  if we had an other project we must add it in
@@ -151,25 +327,43 @@ class Window(QMainWindow):
         # filter is a dictionary which must contain as keys, name in bracket in globing_dictionanry in conf_files
         #{categorie}/{job} look globing_dictionnary in conf_files
 
+        if(self.cb_types.currentText() == 'assets'):
+            filter={'project': conf.project_list.get(self.cb_projects.currentText()),
+                    'type': self.cb_types.currentText(),
+                    'categorie': '*'}
 
-        filter={'project': conf.project_list.get(self.cb_projects.currentText()),
-                'type': self.cb_types.currentText(),
-                'categorie': '*'}
 
+            #create a list of all entity corresponding to my critere
+            #using get_entities function wich need (str,dictionay) argument
+            list_entity_found = list(requester.get_entities('categorie',filter))
+            for entity in list_entity_found:
 
-        #create a list of all entity corresponding to my critere
-        #using get_entities function wich need (str,dictionay) argument
-        list_entity_found = list(requester.get_entities('categorie',filter))
-        for entity in list_entity_found:
+                name = entity.get('categorie')
+                #I create item
+                item = QtWidgets.QListWidgetItem()
+                #set text to item
+                item.setText(name)
+                #set item data with entity
+                item.setData(UserRole, entity)
+                self.lv_scene.addItem(item)
 
-            name = entity.get('categorie')
-            #I create item
-            item = QtWidgets.QListWidgetItem()
-            #set text to item
-            item.setText(name)
-            #set item data with entity
-            item.setData(UserRole, entity)
-            self.lv_scene.addItem(item)
+        elif(self.cb_types.currentText() == 'shots'):
+            filter = {'project': conf.project_list.get(self.cb_projects.currentText()),
+                      'type': self.cb_types.currentText(),
+                      'sequence': '*'}
+
+            # create a list of all entity corresponding to my critere
+            # using get_entities function wich need (str,dictionay) argument
+            list_entity_found = list(requester.get_entities('sequence', filter))
+            for entity in list_entity_found:
+                name = entity.get('sequence')
+                # I create item
+                item = QtWidgets.QListWidgetItem()
+                # set text to item
+                item.setText(name)
+                # set item data with entity
+                item.setData(UserRole, entity)
+                self.lv_scene.addItem(item)
 
 
 
