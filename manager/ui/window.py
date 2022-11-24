@@ -49,7 +49,9 @@ class Window(QMainWindow):
 
 
     def clearlayout(self, layout):
-        pass
+        for i in reversed(range(layout.count())):
+            layout.itemAt(i).widget().deleteLater()
+
 
 
     def list_selection_changed(self):
@@ -309,8 +311,8 @@ class Window(QMainWindow):
             self.l_button.addWidget(temp)
 
     def comboBox_changed(self):
-        pprint(self.l_listwidgets.takeAt(1))
-        self.lv_scene.clear()
+        self.clearlayout(self.l_listwidgets)
+
         self.ui_list_dict = {}
 
         self.init_principal_list()
@@ -332,7 +334,17 @@ class Window(QMainWindow):
                     'type': self.cb_types.currentText(),
                     'categorie': '*'}
 
+            # i create a list that contain data requested
+            temp = QtWidgets.QListWidget()
 
+            # store this list in a dictionary
+            ui_list_dict['lv_project'] = temp
+
+            # connect the new list slection to this same function
+            temp.itemSelectionChanged.connect(self.list_selection_changed)
+
+            # display the list
+            self.l_listwidgets.addWidget(ui_list_dict.get('lv_file'))
             #create a list of all entity corresponding to my critere
             #using get_entities function wich need (str,dictionay) argument
             list_entity_found = list(requester.get_entities('categorie',filter))
