@@ -15,8 +15,7 @@ class StandAloneEngine:
         :param path: on donne le path que l'on souhaite ouvrir
         :return: ca nous ouvre le fichier
         """
-        path = resolver.format(entity)
-        print(type(path))
+        path = resolver.format(entity,resolver.files_templates)
         #print('start '+ path)
         os.system('start '+ path)
 

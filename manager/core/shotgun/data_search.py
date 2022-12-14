@@ -306,7 +306,7 @@ if __name__ == '__main__':
               'type': 'shots',
               'sequence': 'sq010',
               'shots': 'sq010_sh010',
-              'job': 'Environment'}
+              'job': '*'}
     filter2 = {'project': 'Microfilms',
                'type': 'assets',
                'categorie': 'prop',

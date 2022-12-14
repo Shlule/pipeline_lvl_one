@@ -133,3 +133,5 @@ dmypy.json
 
 manager/__pycache__
 private_sg_conf.py
+
+manager/p/

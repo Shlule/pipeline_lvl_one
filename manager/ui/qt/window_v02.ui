@@ -29,11 +29,7 @@
      </layout>
     </item>
     <item row="2" column="0">
-     <layout class="QHBoxLayout" name="l_listwidgets">
-      <item>
-       <widget class="QListWidget" name="lv_scene"/>
-      </item>
-     </layout>
+     <layout class="QHBoxLayout" name="l_listwidgets"/>
     </item>
     <item row="3" column="0">
      <layout class="QHBoxLayout" name="l_checkbox">

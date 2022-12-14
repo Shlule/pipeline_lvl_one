@@ -15,6 +15,10 @@ def get():
         from manager.engine.maya.maya_engine import MayaEngine
         return MayaEngine()
 
+    if(my_env == "C:\Program Files\Side Effects Software\Houdini 19.5.303\\bin\houdini.exe"):
+        from manager.engine.houdini.houdini_engine import HoudiniEngine
+        return HoudiniEngine()
+
     else:
         print ("je suis en stand alone")
         from manager.engine.stand_alone.stand_alone_engine import StandAloneEngine

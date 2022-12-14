@@ -11,6 +11,7 @@ def get_sg():
     return sg
 
 if __name__ == "__main__":
-
+    print(conf.sg_host)
+    print(conf.sg_log_in)
     print(get_sg())
     print(get_sg())
